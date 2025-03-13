@@ -42,14 +42,6 @@ const columns = ref([
   { title: 'Age', field: 'age', sorter: 'number' },
   { title: 'City', field: 'city', sorter: 'string' },
 ]);
-
-const onRowClick = (data) => {
-  console.log('Row clicked:', data);
-};
-
-const onPageChanged = (pageNumber: number) => {
-  console.log('Page changed to:', pageNumber);
-};
 </script>
 <template>
   <div>
@@ -67,14 +59,7 @@ const onPageChanged = (pageNumber: number) => {
       </div>
 
       <div>
-        <TabulatorTable
-          :data="userData"
-          :columns="columns"
-          height="500px"
-          :pagination="true"
-          @row-click="onRowClick"
-          @page-changed="onPageChanged"
-        />
+        <TabulatorTable :data="userData" :columns="columns" height="500px" :pagination="true" />
       </div>
     </div>
   </div>
