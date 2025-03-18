@@ -1,14 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import DashboardView from '../pages/Dashboard.vue';
+import LoginView from '../pages/Login.vue';
 import UsersView from '../pages/Users.vue';
-// import ProjectsView from '../pages/ProjectsView.vue';
-// import CalendarView from '../pages/CalendarView.vue';
-// import ReportsView from '../pages/ReportsView.vue';
-// import SettingsView from '../pages/SettingsView.vue';
+import EventsView from '../pages/Events.vue';
+import StartingListView from '../pages/StartingList.vue';
+import RegisterView from '../pages/Register.vue';
 
 const routes = [
   {
-    path: '/',
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView,
+  },
+  {
+    path: '/dashboard',
     name: 'Dashboard',
     component: DashboardView,
     meta: { icon: 'home' },
@@ -19,24 +29,18 @@ const routes = [
     component: UsersView,
     meta: { icon: 'users' },
   },
-  // {
-  //   path: '/projects',
-  //   name: 'Projects',
-  //   component: ProjectsView,
-  //   meta: { icon: 'folder' },
-  // },
-  // {
-  //   path: '/calendar',
-  //   name: 'Calendar',
-  //   component: CalendarView,
-  //   meta: { icon: 'calendar' },
-  // },
-  // {
-  //   path: '/reports',
-  //   name: 'Reports',
-  //   component: ReportsView,
-  //   meta: { icon: 'chart' },
-  // },
+  {
+    path: '/events',
+    name: 'Events',
+    component: EventsView,
+    meta: { icon: 'calendar' },
+  },
+  {
+    path: '/starting-list',
+    name: 'StartingList',
+    component: StartingListView,
+    meta: { icon: 'chart' },
+  },
   // {
   //   path: '/settings',
   //   name: 'Settings',

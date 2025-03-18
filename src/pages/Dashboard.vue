@@ -4,7 +4,7 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <div class="bg-white p-6 rounded-lg shadow-md">
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
         <div class="flex items-center">
           <div class="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
             <svg
@@ -23,12 +23,12 @@
             </svg>
           </div>
           <div>
-            <p class="text-gray-500 text-sm">Total Users</p>
+            <p class="text-gray-500 dark:text-gray-100 text-sm">Total Users</p>
             <p class="text-2xl font-bold">2,453</p>
           </div>
         </div>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-md">
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
         <div class="flex items-center">
           <div class="p-3 rounded-full bg-green-100 text-green-500 mr-4">
             <svg
@@ -47,12 +47,12 @@
             </svg>
           </div>
           <div>
-            <p class="text-gray-500 text-sm">Revenue</p>
+            <p class="text-gray-500 dark:text-gray-100 text-sm">Revenue</p>
             <p class="text-2xl font-bold">$34,245</p>
           </div>
         </div>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-md">
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
         <div class="flex items-center">
           <div class="p-3 rounded-full bg-orange-100 text-orange-500 mr-4">
             <svg
@@ -71,12 +71,12 @@
             </svg>
           </div>
           <div>
-            <p class="text-gray-500 text-sm">Growth</p>
+            <p class="text-gray-500 dark:text-gray-100 text-sm">Growth</p>
             <p class="text-2xl font-bold">15.3%</p>
           </div>
         </div>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-md">
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
         <div class="flex items-center">
           <div class="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
             <svg
@@ -95,7 +95,7 @@
             </svg>
           </div>
           <div>
-            <p class="text-gray-500 text-sm">Tasks</p>
+            <p class="text-gray-500 dark:text-gray-100 text-sm">Tasks</p>
             <p class="text-2xl font-bold">27/45</p>
           </div>
         </div>
@@ -106,7 +106,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Recent Activity -->
       <div class="lg:col-span-2">
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
           <div class="space-y-4">
             <div class="border-b pb-4">
@@ -115,10 +115,10 @@
                   <img src="" alt="User" class="h-10 w-10 rounded-full mr-3" />
                   <div>
                     <p class="font-medium">Jane Cooper</p>
-                    <p class="text-sm text-gray-500">Created a new project</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-100">Created a new project</p>
                   </div>
                 </div>
-                <span class="text-sm text-gray-500">2 hours ago</span>
+                <span class="text-sm text-gray-500 dark:text-gray-100">2 hours ago</span>
               </div>
             </div>
             <div class="border-b pb-4">
@@ -127,10 +127,12 @@
                   <img src="" alt="User" class="h-10 w-10 rounded-full mr-3" />
                   <div>
                     <p class="font-medium">Robert Fox</p>
-                    <p class="text-sm text-gray-500">Completed task: Design System</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-100">
+                      Completed task: Design System
+                    </p>
                   </div>
                 </div>
-                <span class="text-sm text-gray-500">5 hours ago</span>
+                <span class="text-sm text-gray-500 dark:text-gray-100">5 hours ago</span>
               </div>
             </div>
             <div class="border-b pb-4">
@@ -139,10 +141,10 @@
                   <img src="" alt="User" class="h-10 w-10 rounded-full mr-3" />
                   <div>
                     <p class="font-medium">Esther Howard</p>
-                    <p class="text-sm text-gray-500">Added 3 new team members</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-100">Added 3 new team members</p>
                   </div>
                 </div>
-                <span class="text-sm text-gray-500">1 day ago</span>
+                <span class="text-sm text-gray-500 dark:text-gray-100">1 day ago</span>
               </div>
             </div>
             <div>
@@ -151,10 +153,10 @@
                   <img src="" alt="User" class="h-10 w-10 rounded-full mr-3" />
                   <div>
                     <p class="font-medium">Darlene Robertson</p>
-                    <p class="text-sm text-gray-500">Published a new article</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-100">Published a new article</p>
                   </div>
                 </div>
-                <span class="text-sm text-gray-500">2 days ago</span>
+                <span class="text-sm text-gray-500 dark:text-gray-100">2 days ago</span>
               </div>
             </div>
           </div>
@@ -163,7 +165,7 @@
 
       <!-- Upcoming Tasks -->
       <div class="lg:col-span-1">
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold mb-4">Upcoming Tasks</h3>
           <div class="space-y-4">
             <div class="flex items-start">
@@ -172,7 +174,7 @@
               </div>
               <div class="ml-3">
                 <p class="font-medium">Design meeting</p>
-                <p class="text-sm text-gray-500">Today, 2:30 PM</p>
+                <p class="text-sm text-gray-500 dark:text-gray-100">Today, 2:30 PM</p>
               </div>
             </div>
             <div class="flex items-start">
@@ -181,7 +183,7 @@
               </div>
               <div class="ml-3">
                 <p class="font-medium">Project review</p>
-                <p class="text-sm text-gray-500">Tomorrow, 10:00 AM</p>
+                <p class="text-sm text-gray-500 dark:text-gray-100">Tomorrow, 10:00 AM</p>
               </div>
             </div>
             <div class="flex items-start">
@@ -190,7 +192,7 @@
               </div>
               <div class="ml-3">
                 <p class="font-medium">Release update</p>
-                <p class="text-sm text-gray-500">Mar 10, 9:00 AM</p>
+                <p class="text-sm text-gray-500 dark:text-gray-100">Mar 10, 9:00 AM</p>
               </div>
             </div>
             <div class="flex items-start">
@@ -199,7 +201,7 @@
               </div>
               <div class="ml-3">
                 <p class="font-medium">Quarterly planning</p>
-                <p class="text-sm text-gray-500">Mar 15, 11:00 AM</p>
+                <p class="text-sm text-gray-500 dark:text-gray-100">Mar 15, 11:00 AM</p>
               </div>
             </div>
           </div>

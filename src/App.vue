@@ -1,13 +1,49 @@
-<!-- App.vue -->
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter, useRoute, RouteRecordRaw } from 'vue-router';
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
+import SidebarItem from './components/SidebarItem.vue';
+import { Button } from 'primevue';
+
+// Setup router and route
+const router = useRouter();
+const route = useRoute();
+
+// Define auth route paths
+const authRoutes = ['/login', '/register', '/forgot-password'];
+
+// Check if current route is an auth route
+const isAuthRoute = computed(() => {
+  return authRoutes.includes(route.path);
+});
+
+// Get all routes and filter out auth routes for sidebar
+const filteredRoutes = computed(() => {
+  return router.options.routes.filter((route: RouteRecordRaw) => {
+    // Only show routes that should be in sidebar
+    return route.meta?.showInSidebar !== false && !authRoutes.includes(route.path);
+  });
+});
+
+// Sidebar state
+const sidebarOpen = ref(true);
+
+// Toggle sidebar function
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value;
+};
+</script>
+
 <template>
-  <div class="flex h-screen bg-gray-100">
-    <!-- Sidebar -->
+  <div class="flex h-screen bg-gray-100 dark:bg-gray-700">
+    <!-- Sidebar - Only shown for authenticated routes -->
     <div
-      :class="['transition-all duration-300 bg-gray-800 text-white', sidebarOpen ? 'w-64' : 'w-20']"
+      v-if="!isAuthRoute"
+      :class="['transition-all duration-300 bg-gray-700 text-white', sidebarOpen ? 'w-64' : 'w-20']"
     >
       <div class="p-4 flex items-center justify-between">
-        <h1 class="font-bold text-xl" v-show="sidebarOpen">Dashboard</h1>
-        <button @click="toggleSidebar" class="p-2 rounded-md hover:bg-gray-700 focus:outline-none">
+        <h1 class="font-bold text-xl" v-show="sidebarOpen">Akuatik Jabar</h1>
+        <Button variant="text" severity="info" @click="toggleSidebar">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -22,25 +58,30 @@
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
-        </button>
+        </Button>
       </div>
       <nav class="mt-5">
         <SidebarItem
-          v-for="route in routes"
+          v-for="route in filteredRoutes"
           :key="route.path"
-          :icon="route.meta.icon"
+          :icon="(route.meta?.icon as string)"
           :expanded="sidebarOpen"
-          :title="route.name"
+          :title="route.name?.toString() || ''"
           :active="route.path === $route.path"
           :to="route.path"
         />
       </nav>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Top Navbar -->
-      <header class="bg-white shadow-sm">
+    <!-- Main Content - Full width for auth pages, with sidebar for others -->
+    <div
+      :class="[
+        'flex-1 flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900',
+        isAuthRoute ? 'w-full' : '',
+      ]"
+    >
+      <!-- Top Navbar - Only shown for non-auth routes -->
+      <header v-if="!isAuthRoute" class="bg-gray-100 dark:bg-gray-700 shadow-sm">
         <div class="px-4 py-3 flex items-center justify-between">
           <div class="flex items-center">
             <input
@@ -77,12 +118,15 @@
               leave-to-class="transform scale-95 opacity-0"
             >
               <MenuItems
-                class="absolute right-0 mt-2 w-48 py-1 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                class="absolute right-0 mt-2 w-48 py-1 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               >
                 <MenuItem v-slot="{ active }">
                   <a
                     href="#"
-                    :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
+                    :class="[
+                      active ? 'bg-gray-100 dark:bg-gray-900' : '',
+                      'block px-4 py-2 text-sm text-gray-700',
+                    ]"
                   >
                     Your Profile
                   </a>
@@ -90,7 +134,10 @@
                 <MenuItem v-slot="{ active }">
                   <a
                     href="#"
-                    :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
+                    :class="[
+                      active ? 'bg-gray-100 dark:bg-gray-900' : '',
+                      'block px-4 py-2 text-sm text-gray-700',
+                    ]"
                   >
                     Settings
                   </a>
@@ -98,7 +145,10 @@
                 <MenuItem v-slot="{ active }">
                   <a
                     href="#"
-                    :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
+                    :class="[
+                      active ? 'bg-gray-100 dark:bg-gray-900' : '',
+                      'block px-4 py-2 text-sm text-gray-700',
+                    ]"
                   >
                     Sign out
                   </a>
@@ -110,41 +160,14 @@
       </header>
 
       <!-- Page Content - Router View -->
-      <main class="flex-1 overflow-y-auto bg-gray-100 p-6">
+      <main
+        :class="[
+          'flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-800',
+          isAuthRoute ? 'flex items-center justify-center' : 'p-6',
+        ]"
+      >
         <router-view></router-view>
       </main>
     </div>
   </div>
 </template>
-
-<script>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
-import SidebarItem from './components/SidebarItem.vue';
-
-export default {
-  components: {
-    Menu,
-    MenuButton,
-    MenuItems,
-    MenuItem,
-    SidebarItem,
-  },
-  setup() {
-    const router = useRouter();
-    const routes = computed(() => router.options.routes);
-    const sidebarOpen = ref(true);
-
-    const toggleSidebar = () => {
-      sidebarOpen.value = !sidebarOpen.value;
-    };
-
-    return {
-      routes,
-      sidebarOpen,
-      toggleSidebar,
-    };
-  },
-};
-</script>
