@@ -8,7 +8,7 @@ import RegisterView from '../pages/Register.vue';
 
 const routes = [
   {
-    path: '/login',
+    path: '/',
     name: 'Login',
     component: LoginView,
   },

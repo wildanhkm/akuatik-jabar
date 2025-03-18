@@ -9,8 +9,8 @@ import { Button } from 'primevue';
 const router = useRouter();
 const route = useRoute();
 
-// Define auth route paths
-const authRoutes = ['/login', '/register', '/forgot-password'];
+// Todo with forgot password
+const authRoutes = ['/', '/register', '/forgot-password'];
 
 // Check if current route is an auth route
 const isAuthRoute = computed(() => {
