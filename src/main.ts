@@ -16,6 +16,7 @@ app.use(PrimeVue, {
         name: 'primevue',
         order: 'theme, base, primevue',
       },
+      darkModeSelector: false,
     },
   },
 });
