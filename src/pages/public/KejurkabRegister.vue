@@ -8,12 +8,14 @@ import FieldLayout from '../../components/FieldLayout.vue';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { competitionCategoriesByAge } from '../../constants/constants';
+import Text from '../../components/Text.vue';
 
 type FormValues = {
   name: string;
   gender: string;
   clubName: string;
   birthYear: string;
+  bestTime: string;
   ageCategory: string;
   competitionCategory: string[];
 };
@@ -146,6 +148,7 @@ const initialValues = ref<FormValues>({
   gender: '',
   clubName: '',
   birthYear: '',
+  bestTime: '',
   ageCategory: '',
   competitionCategory: [],
 });
@@ -156,6 +159,7 @@ const resolver = ref(
       name: z.string().min(3, 'Nama wajib diisi!'),
       gender: z.string().min(3, 'Jenis kelamin wajib dipilih!'),
       birthYear: z.string().min(4, 'Tahun lahir wajib diisi!'),
+      bestTime: z.string().min(1, 'Best time wajib diisi!'),
       ageCategory: z.string().min(4, 'Kelompok usia wajib dipilih!'),
       clubName: z.string().min(3, 'Nama klub lahir wajib diisi!'),
       competitionCategory: z
@@ -192,90 +196,115 @@ const onFormSubmit = ({ valid }: FormSubmitEvent) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 bg-white p-8 rounded-lg">
-    <Toast />
+  <div class="flex flex-col gap-12">
+    <h1 class="text-3xl font-bold text-gray-900">Registrasi Kejurkab</h1>
+    <div class="flex flex-col gap-4 bg-white p-8 rounded-lg">
+      <Toast />
 
-    <h1 class="text-3xl font-bold text-center">Registrasi Kejurkab</h1>
-    <p>Daftarkan diri Anda untuk mengikuti Kejurkab</p>
+      <Text
+        as="h2"
+        variant="header2"
+        text="Data Peserta Lomba"
+        subtitle="Daftarkan diri Anda untuk mengikuti Kejurkab"
+      />
 
-    <Form v-slot="$form" :initialValues :resolver @submit="onFormSubmit">
-      <div class="grid grid-cols-2 gap-8 w-full py-10">
-        <div class="flex flex-col gap-1">
-          <FieldLayout label="Nama Peserta">
-            <InputText id="name" name="name" type="text" fluid />
-          </FieldLayout>
-          <Message v-if="$form?.name?.invalid" severity="error" size="small" variant="simple">{{
-            $form.name.error?.message
-          }}</Message>
+      <Form v-slot="$form" :initialValues :resolver @submit="onFormSubmit">
+        <div class="grid grid-cols-2 gap-8 w-full py-10">
+          <div class="flex flex-col gap-1">
+            <FieldLayout label="Nama Peserta" required>
+              <InputText id="name" name="name" type="text" fluid />
+            </FieldLayout>
+            <Message v-if="$form?.name?.invalid" severity="error" size="small" variant="simple">{{
+              $form.name.error?.message
+            }}</Message>
+          </div>
+          <div class="flex flex-col gap-1">
+            <FieldLayout label="Nama Klub" required>
+              <InputText id="clubName" name="clubName" type="text" fluid />
+            </FieldLayout>
+            <Message
+              v-if="$form?.clubName?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $form.clubName.error?.message }}</Message
+            >
+          </div>
+          <div class="flex flex-col gap-1">
+            <FieldLayout label="Tahun Lahir" required>
+              <InputText id="birthYear" name="birthYear" type="number" fluid />
+            </FieldLayout>
+            <Message
+              v-if="$form?.birthYear?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $form.birthYear.error?.message }}</Message
+            >
+          </div>
+          <div class="flex flex-col gap-1">
+            <FieldLayout label="Jenis Kelamin" required>
+              <Select name="gender" :options="gender" option-label="label" option-value="value" />
+            </FieldLayout>
+            <Message v-if="$form?.gender?.invalid" severity="error" size="small" variant="simple">{{
+              $form.gender.error?.message
+            }}</Message>
+          </div>
+          <div class="flex flex-col gap-1">
+            <FieldLayout label="Kelompok Usia" required>
+              <Select
+                v-model="initialValues.ageCategory"
+                name="ageCategory"
+                :options="ageCategories"
+                option-label="label"
+                option-value="value"
+                :maxSelectedLabels="3"
+                display="chip"
+              />
+            </FieldLayout>
+            <Message
+              v-if="$form?.ageCategory?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $form.ageCategory.error?.message }}</Message
+            >
+          </div>
+          <div class="flex flex-col gap-1">
+            <FieldLayout label="Nomor Lomba" required>
+              <MultiSelect
+                name="competitionCategory"
+                :options="competitionCategories"
+                option-label="label"
+                :maxSelectedLabels="3"
+                display="chip"
+              />
+            </FieldLayout>
+            <Message
+              v-if="$form?.competitionCategory?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $form.competitionCategory.error?.message }}</Message
+            >
+          </div>
+          <div class="flex flex-col gap-1">
+            <FieldLayout label="Best Time" required>
+              <InputText id="bestTime" name="bestTime" type="number" fluid />
+            </FieldLayout>
+            <Message
+              v-if="$form?.bestTime?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+              >{{ $form.bestTime.error?.message }}</Message
+            >
+          </div>
         </div>
-        <div class="flex flex-col gap-1">
-          <FieldLayout label="Nama Klub">
-            <InputText id="clubName" name="clubName" type="text" fluid />
-          </FieldLayout>
-          <Message v-if="$form?.clubName?.invalid" severity="error" size="small" variant="simple">{{
-            $form.clubName.error?.message
-          }}</Message>
+        <div class="flex justify-end">
+          <Button type="submit" severity="info" label="Simpan" />
         </div>
-        <div class="flex flex-col gap-1">
-          <FieldLayout label="Tahun Lahir">
-            <InputText id="birthYear" name="birthYear" type="number" fluid />
-          </FieldLayout>
-          <Message
-            v-if="$form?.birthYear?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.birthYear.error?.message }}</Message
-          >
-        </div>
-        <div class="flex flex-col gap-1">
-          <FieldLayout label="Jenis Kelamin">
-            <Select name="gender" :options="gender" option-label="label" option-value="value" />
-          </FieldLayout>
-          <Message v-if="$form?.gender?.invalid" severity="error" size="small" variant="simple">{{
-            $form.gender.error?.message
-          }}</Message>
-        </div>
-        <div class="flex flex-col gap-1">
-          <FieldLayout label="Kelompok Usia">
-            <Select
-              v-model="initialValues.ageCategory"
-              name="ageCategory"
-              :options="ageCategories"
-              option-label="label"
-              option-value="value"
-              :maxSelectedLabels="3"
-              display="chip"
-            />
-          </FieldLayout>
-          <Message
-            v-if="$form?.ageCategory?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.ageCategory.error?.message }}</Message
-          >
-        </div>
-        <div class="flex flex-col gap-1">
-          <FieldLayout label="Nomor Lomba">
-            <MultiSelect
-              name="competitionCategory"
-              :options="competitionCategories"
-              option-label="label"
-              :maxSelectedLabels="3"
-              display="chip"
-            />
-          </FieldLayout>
-          <Message
-            v-if="$form?.competitionCategory?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.competitionCategory.error?.message }}</Message
-          >
-        </div>
-      </div>
-      <Button type="submit" severity="info" label="Simpan" />
-    </Form>
+      </Form>
+    </div>
   </div>
 </template>
