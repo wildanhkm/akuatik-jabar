@@ -9,6 +9,15 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { competitionCategoriesByAge } from '../../constants/constants';
 import Text from '../../components/Text.vue';
+import DropZone from '../../components/DropZone.vue';
+import FilePreview from '../../components/FilePreview.vue';
+import useFileList from '../../compositions/file-list';
+import createUploader from '../../compositions/file-uploader';
+
+enum EnumRegistrationType {
+  Import = 'ImportExcel',
+  Form = 'InputForm',
+}
 
 type FormValues = {
   name: string;
@@ -21,6 +30,12 @@ type FormValues = {
 };
 
 const toast = useToast();
+
+// File Management
+const { files, addFiles, removeFile } = useFileList();
+
+// Uploader
+const { uploadFiles } = createUploader('YOUR URL HERE');
 
 const ageCategories = ref([
   {
@@ -132,6 +147,8 @@ const allCompetitionCategories = ref([
   },
 ]);
 
+const selectedRegType = ref<EnumRegistrationType>();
+
 const gender = ref([
   {
     label: 'Laki-laki',
@@ -193,6 +210,16 @@ const onFormSubmit = ({ valid }: FormSubmitEvent) => {
     });
   }
 };
+
+function selectRegistrationType(value: EnumRegistrationType) {
+  selectedRegType.value = value;
+}
+
+function onInputChange(e: Event) {
+  addFiles((<HTMLInputElement>e.target).files!);
+  (<HTMLInputElement>e.target).value = '';
+  uploadFiles(files.value);
+}
 </script>
 
 <template>
@@ -208,7 +235,19 @@ const onFormSubmit = ({ valid }: FormSubmitEvent) => {
         subtitle="Daftarkan diri Anda untuk mengikuti Kejurkab"
       />
 
-      <Form v-slot="$form" :initialValues :resolver @submit="onFormSubmit">
+      <div class="flex gap-4 items-center">
+        <Button @click="selectRegistrationType(EnumRegistrationType.Import)">Import Excel</Button>
+        <span class="text-xl font-medium">atau</span>
+        <Button @click="selectRegistrationType(EnumRegistrationType.Form)">Input Form</Button>
+      </div>
+
+      <Form
+        v-if="selectedRegType === EnumRegistrationType.Form"
+        v-slot="$form"
+        :initialValues
+        :resolver
+        @submit="onFormSubmit"
+      >
         <div class="grid grid-cols-2 gap-8 w-full py-10">
           <div class="flex flex-col gap-1">
             <FieldLayout label="Nama Peserta" required>
@@ -305,6 +344,106 @@ const onFormSubmit = ({ valid }: FormSubmitEvent) => {
           <Button type="submit" severity="info" label="Simpan" />
         </div>
       </Form>
+
+      <div v-if="selectedRegType === EnumRegistrationType.Import" class="flex flex-col gap-4">
+        <DropZone
+          class="drop-area"
+          @files-dropped="addFiles"
+          #default="{ dropZoneActive, isValidDrag }"
+        >
+          <label for="file-input" class="cursor-pointer block text-center">
+            <span v-if="dropZoneActive && isValidDrag" class="flex flex-col items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-12 w-12 text-green-600"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <polyline points="9 15 12 18 15 15"></polyline>
+                <path d="M12 18L12 9"></path>
+              </svg>
+              <span class="text-lg font-medium text-green-600 mt-2">Drop Excel File Here</span>
+              <span class="text-sm text-gray-500">to add it to the queue</span>
+            </span>
+
+            <span v-else-if="dropZoneActive && !isValidDrag" class="flex flex-col items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-12 w-12 text-red-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+              <span class="text-lg font-medium text-red-500 mt-2">Only Excel Files Accepted</span>
+              <span class="text-sm text-gray-500"
+                >Please drop Excel files only (.xlsx, .xls, etc.)</span
+              >
+            </span>
+
+            <span v-else class="flex flex-col items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-12 w-12 text-green-600"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="8" y1="13" x2="16" y2="13"></line>
+                <line x1="8" y1="17" x2="16" y2="17"></line>
+              </svg>
+              <span class="text-lg font-medium text-gray-700 mt-2">Drag Excel Files Here</span>
+              <span class="text-sm text-gray-500">
+                or <strong class="text-green-600">click here</strong> to select files
+              </span>
+              <span class="text-xs text-gray-400 mt-2"
+                >Supported formats: .xlsx, .xls, .xlsm, .xlsb, .ods</span
+              >
+            </span>
+
+            <input
+              hidden
+              type="file"
+              id="file-input"
+              @change="onInputChange"
+              accept=".xlsx,.xls,.xlsm,.xlsb,.ods,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.spreadsheet"
+            />
+          </label>
+          <div v-show="files.length" class="mt-6">
+            <h3 class="text-sm font-medium text-gray-700 mb-2">
+              Files to Import ({{ files.length }})
+            </h3>
+            <div class="flex flex-wrap gap-4">
+              <FilePreview
+                v-for="file of files"
+                :key="file.id"
+                :file="file"
+                tag="div"
+                @remove="removeFile"
+                class="flex-grow max-w-xs"
+              />
+            </div>
+          </div>
+        </DropZone>
+        <Button type="submit" severity="info" label="Simpan" />
+      </div>
     </div>
   </div>
 </template>

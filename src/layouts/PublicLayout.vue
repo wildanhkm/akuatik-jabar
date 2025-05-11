@@ -26,7 +26,7 @@ import Logo from '/images/logo_akuatik.jpg';
 
     <SectionDivider class="h-16" />
 
-    <main class="max-w-6xl mx-auto text-gray-900">
+    <main class="max-w-6xl mx-auto text-gray-900 min-h-screen">
       <router-view />
     </main>
 
