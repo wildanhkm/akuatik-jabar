@@ -13,11 +13,7 @@ import DropZone from '../../components/DropZone.vue';
 import FilePreview from '../../components/FilePreview.vue';
 import useFileList from '../../compositions/file-list';
 import createUploader from '../../compositions/file-uploader';
-
-enum EnumRegistrationType {
-  Import = 'ImportExcel',
-  Form = 'InputForm',
-}
+import { EnumRegistrationType, EnumCompetitionType } from '../../types';
 
 type FormValues = {
   name: string;
@@ -29,13 +25,19 @@ type FormValues = {
   competitionCategory: string[];
 };
 
+const selectedRegType = ref<EnumRegistrationType | null>();
+const selectedCompeType = ref<EnumCompetitionType | null>();
+
 const toast = useToast();
 
 // File Management
 const { files, addFiles, removeFile } = useFileList();
 
 // Uploader
-const { uploadFiles } = createUploader('YOUR URL HERE');
+const { uploadFiles } = createUploader(
+  'YOUR URL HERE',
+  selectedCompeType.value || EnumCompetitionType.Individual
+);
 
 const ageCategories = ref([
   {
@@ -147,8 +149,6 @@ const allCompetitionCategories = ref([
   },
 ]);
 
-const selectedRegType = ref<EnumRegistrationType>();
-
 const gender = ref([
   {
     label: 'Laki-laki',
@@ -201,11 +201,22 @@ const competitionCategories = computed(() => {
   );
 });
 
-const onFormSubmit = ({ valid }: FormSubmitEvent) => {
+const onFormSubmit = (value: FormSubmitEvent) => {
+  console.log('value :>> ', value);
+  const { states, valid } = value;
+  const bestTimeRegex: RegExp = /^\d{2}:\d{2}:\d{2}$/;
+
+  if (!bestTimeRegex.test(states.bestTime.value)) {
+    return toast.add({
+      severity: 'error',
+      summary: 'Format Best Time Tidak sesuai. Format wajib berupa xx:xx:xx',
+    });
+  }
+
   if (valid) {
     toast.add({
       severity: 'success',
-      summary: 'Form is submitted.',
+      summary: 'Form berhasil disimpan.',
       life: 3000,
     });
   }
@@ -213,6 +224,10 @@ const onFormSubmit = ({ valid }: FormSubmitEvent) => {
 
 function selectRegistrationType(value: EnumRegistrationType) {
   selectedRegType.value = value;
+}
+
+function selectCompetitionType(value: EnumCompetitionType) {
+  selectedCompeType.value = value;
 }
 
 function onInputChange(e: Event) {
@@ -236,9 +251,35 @@ function onInputChange(e: Event) {
       />
 
       <div class="flex gap-4 items-center">
-        <Button @click="selectRegistrationType(EnumRegistrationType.Import)">Import Excel</Button>
+        <Button
+          variant="outlined"
+          severity="secondary"
+          @click="selectCompetitionType(EnumCompetitionType.Individual)"
+          >Individu</Button
+        >
         <span class="text-xl font-medium">atau</span>
-        <Button @click="selectRegistrationType(EnumRegistrationType.Form)">Input Form</Button>
+        <Button
+          variant="outlined"
+          severity="secondary"
+          @click="selectCompetitionType(EnumCompetitionType.Estafet)"
+          >Estafet</Button
+        >
+      </div>
+
+      <div v-if="selectedCompeType" class="flex gap-4 items-center">
+        <Button
+          variant="outlined"
+          severity="secondary"
+          @click="selectRegistrationType(EnumRegistrationType.Import)"
+          >Import Excel</Button
+        >
+        <span class="text-xl font-medium">atau</span>
+        <Button
+          variant="outlined"
+          severity="secondary"
+          @click="selectRegistrationType(EnumRegistrationType.Form)"
+          >Input Form</Button
+        >
       </div>
 
       <Form
@@ -249,7 +290,10 @@ function onInputChange(e: Event) {
         @submit="onFormSubmit"
       >
         <div class="grid grid-cols-2 gap-8 w-full py-10">
-          <div class="flex flex-col gap-1">
+          <div
+            v-if="selectedCompeType === EnumCompetitionType.Individual"
+            class="flex flex-col gap-1"
+          >
             <FieldLayout label="Nama Peserta" required>
               <InputText id="name" name="name" type="text" fluid />
             </FieldLayout>
@@ -329,7 +373,7 @@ function onInputChange(e: Event) {
           </div>
           <div class="flex flex-col gap-1">
             <FieldLayout label="Best Time" required>
-              <InputText id="bestTime" name="bestTime" type="number" fluid />
+              <InputText id="bestTime" name="bestTime" type="text" fluid />
             </FieldLayout>
             <Message
               v-if="$form?.bestTime?.invalid"

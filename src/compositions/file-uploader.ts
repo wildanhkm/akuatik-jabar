@@ -1,9 +1,15 @@
+import { EnumCompetitionType } from '../types';
 import { UploadableFile } from './file-list';
 
-export async function uploadFile(file: UploadableFile, url: string): Promise<Response> {
+export async function uploadFile(
+  file: UploadableFile,
+  url: string,
+  compeType: EnumCompetitionType
+): Promise<Response> {
   // set up the request data
   let formData = new FormData();
   formData.append('file', file.file);
+  formData.append('compeType', compeType.toString());
 
   // track status and upload file
   file.status = null;
@@ -15,17 +21,21 @@ export async function uploadFile(file: UploadableFile, url: string): Promise<Res
   return response;
 }
 
-export function uploadFiles(files: UploadableFile[], url: string): Promise<Response[]> {
-  return Promise.all(files.map((file) => uploadFile(file, url)));
+export function uploadFiles(
+  files: UploadableFile[],
+  url: string,
+  compeType: EnumCompetitionType
+): Promise<Response[]> {
+  return Promise.all(files.map((file) => uploadFile(file, url, compeType)));
 }
 
-export default function createUploader(url: string) {
+export default function createUploader(url: string, compeType: EnumCompetitionType) {
   return {
     uploadFile: function (file: UploadableFile): Promise<Response> {
-      return uploadFile(file, url);
+      return uploadFile(file, url, compeType);
     },
     uploadFiles: function (files: UploadableFile[]): Promise<Response[]> {
-      return uploadFiles(files, url);
+      return uploadFiles(files, url, compeType);
     },
   };
 }
