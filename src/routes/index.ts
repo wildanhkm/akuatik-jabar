@@ -7,7 +7,6 @@ import EventsView from '../pages/events/Index.vue';
 import EditEventView from '../pages/events/EditEvent.vue';
 import CreateEventView from '../pages/events/CreateEvent.vue';
 
-import StartingListView from '../pages/StartingList.vue';
 import RegisterView from '../pages/Register.vue';
 import KejurkabRegister from '../pages/public/KejurkabRegister.vue';
 import PublicLayout from '../layouts/PublicLayout.vue';
