@@ -7,7 +7,7 @@ type TextFieldProps = {
 };
 const props = defineProps<TextFieldProps>();
 
-const textFieldClasses = props.class + ' text-slate-900 dark:text-white';
+const textFieldClasses = props.class + ' text-gray-900';
 const componentType = computed(() => {
   return props.type || 'p';
 });

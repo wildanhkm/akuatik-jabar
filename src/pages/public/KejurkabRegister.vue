@@ -250,36 +250,42 @@ function onInputChange(e: Event) {
         subtitle="Daftarkan diri Anda untuk mengikuti Kejurkab"
       />
 
-      <div class="flex gap-4 items-center">
-        <Button
-          variant="outlined"
-          severity="secondary"
-          @click="selectCompetitionType(EnumCompetitionType.Individual)"
-          >Individu</Button
-        >
-        <span class="text-xl font-medium">atau</span>
-        <Button
-          variant="outlined"
-          severity="secondary"
-          @click="selectCompetitionType(EnumCompetitionType.Estafet)"
-          >Estafet</Button
-        >
+      <div class="flex flex-col gap-1">
+        <span class="text-gray-900">Jenis lomba</span>
+        <div class="flex gap-4 items-center">
+          <Button
+            variant="outlined"
+            severity="secondary"
+            @click="selectCompetitionType(EnumCompetitionType.Individual)"
+            >Individu</Button
+          >
+          <span class="text-xl font-medium">atau</span>
+          <Button
+            variant="outlined"
+            severity="secondary"
+            @click="selectCompetitionType(EnumCompetitionType.Estafet)"
+            >Estafet</Button
+          >
+        </div>
       </div>
 
-      <div v-if="selectedCompeType" class="flex gap-4 items-center">
-        <Button
-          variant="outlined"
-          severity="secondary"
-          @click="selectRegistrationType(EnumRegistrationType.Import)"
-          >Import Excel</Button
-        >
-        <span class="text-xl font-medium">atau</span>
-        <Button
-          variant="outlined"
-          severity="secondary"
-          @click="selectRegistrationType(EnumRegistrationType.Form)"
-          >Input Form</Button
-        >
+      <div v-if="selectedCompeType" class="flex flex-col gap-1">
+        <span class="text-gray-900">Pendaftaran</span>
+        <div class="flex gap-4 items-center">
+          <Button
+            variant="outlined"
+            severity="secondary"
+            @click="selectRegistrationType(EnumRegistrationType.Import)"
+            >Import Excel</Button
+          >
+          <span class="text-xl font-medium">atau</span>
+          <Button
+            variant="outlined"
+            severity="secondary"
+            @click="selectRegistrationType(EnumRegistrationType.Form)"
+            >Input Form</Button
+          >
+        </div>
       </div>
 
       <Form
@@ -390,6 +396,12 @@ function onInputChange(e: Event) {
       </Form>
 
       <div v-if="selectedRegType === EnumRegistrationType.Import" class="flex flex-col gap-4">
+        <p>
+          Format import excel dapat diunduh disini.
+          <a href="/public/Format Pendaftaran.xlsx" download class="text-blue-600 font-bold"
+            >Format Pendaftaran</a
+          >
+        </p>
         <DropZone
           class="drop-area"
           @files-dropped="addFiles"

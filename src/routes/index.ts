@@ -9,68 +9,75 @@ import KejurkabRegister from '../pages/public/KejurkabRegister.vue';
 import PublicLayout from '../layouts/PublicLayout.vue';
 import AuthenticatedLayout from '../layouts/AuthenticatedLayout.vue';
 
-// const isAuthenticated = false;
-
 const routes = [
   {
     path: '/',
     name: '',
     component: AuthenticatedLayout,
+    redirect: () => {
+      const token = localStorage.getItem('token');
+      return token ? '/dashboard' : '/login';
+    },
     children: [
-      {
-        path: '/login',
-        name: 'Login',
-        component: LoginView,
-      },
-      {
-        path: '/register',
-        name: 'Register',
-        component: RegisterView,
-      },
       {
         path: '/dashboard',
         name: 'Dashboard',
         component: DashboardView,
-        meta: { icon: 'home' },
+        meta: { requiresAuth: true, icon: 'home' },
       },
       {
         path: '/users',
         name: 'Users',
         component: UsersView,
-        meta: { icon: 'users' },
+        meta: { requiresAuth: true, icon: 'users' },
       },
       {
         path: '/events',
         name: 'Events',
         component: EventsView,
-        meta: { icon: 'calendar' },
+        meta: { requiresAuth: true, icon: 'calendar' },
       },
       {
         path: '/starting-list',
         name: 'Starting List',
         component: StartingListView,
-        meta: { icon: 'chart' },
+        meta: { requiresAuth: true, icon: 'chart' },
       },
     ],
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView,
+    meta: { requiresAuth: false },
+  },  
+  {
     path: '/public',
     name: 'Public',
     component: PublicLayout,
+    meta: { requiresAuth: false },
     children: [
       {
         path: '/public/kejurkab/register',
         name: 'Public Kejurkab Register',
         component: KejurkabRegister,
+        meta: { requiresAuth: false },
       },
     ],
   },
-  // {
-  //   path: '/settings',
-  //   name: 'Settings',
-  //   component: SettingsView,
-  //   meta: { icon: 'settings' },
-  // },
+  // Catch-all route for 404
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../pages/public/NotFound.vue'),
+    meta: { requiresAuth: false },
+  },
 ];
 
 const router = createRouter({
@@ -78,9 +85,61 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, _, next) => {
-//   if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' });
-//   else next();
-// });
+// Navigation Guard
+router.beforeEach((to, _, next) => {
+  const token = localStorage.getItem('token');
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+  // Check for token expiration
+  if (token) {
+    try {
+      // Parse the JWT token
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        window
+          .atob(base64)
+          .split('')
+          .map((c) => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join('')
+      );
+
+      const { exp } = JSON.parse(jsonPayload);
+
+      // If token is expired, remove it and redirect to login
+      if (exp * 1000 < Date.now()) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (requiresAuth) {
+          next('/login');
+          return;
+        }
+      }
+    } catch (error) {
+      // If token is invalid, remove it
+      console.error('Invalid token:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      if (requiresAuth) {
+        next('/login');
+        return;
+      }
+    }
+  }
+
+  // Route guard logic
+  if (requiresAuth && !token) {
+    // If route requires auth and no token exists, redirect to login
+    next('/login');
+  } else if (!requiresAuth && token && (to.path === '/login' || to.path === '/register')) {
+    // If user is already logged in and tries to access login/register, redirect to dashboard
+    next('/dashboard');
+  } else {
+    // Otherwise proceed as normal
+    next();
+  }
+});
 
 export default router;
