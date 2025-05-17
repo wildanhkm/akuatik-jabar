@@ -14,6 +14,7 @@ import FilePreview from '../../components/FilePreview.vue';
 import useFileList from '../../compositions/file-list';
 import createUploader from '../../compositions/file-uploader';
 import { EnumRegistrationType, EnumCompetitionType } from '../../types';
+import ConfirmableButton from '../../components/ConfirmableButton.vue';
 
 type FormValues = {
   name: string;
@@ -27,6 +28,7 @@ type FormValues = {
 
 const selectedRegType = ref<EnumRegistrationType | null>();
 const selectedCompeType = ref<EnumCompetitionType | null>();
+const formRef = ref<any>(null); // Reference to the form
 
 const toast = useToast();
 
@@ -35,7 +37,7 @@ const { files, addFiles, removeFile } = useFileList();
 
 // Uploader
 const { uploadFiles } = createUploader(
-  'YOUR URL HERE',
+  'upload-excel',
   selectedCompeType.value || EnumCompetitionType.Individual
 );
 
@@ -201,25 +203,29 @@ const competitionCategories = computed(() => {
   );
 });
 
-const onFormSubmit = (value: FormSubmitEvent) => {
-  console.log('value :>> ', value);
+const onFormSubmit = async (value: FormSubmitEvent) => {
   const { states, valid } = value;
-  const bestTimeRegex: RegExp = /^\d{2}:\d{2}:\d{2}$/;
+
+  if (!valid) {
+    return;
+  }
+
+  const bestTimeRegex: RegExp = /^\d{2}.\d{2}.\d{2}$/;
 
   if (!bestTimeRegex.test(states.bestTime.value)) {
     return toast.add({
       severity: 'error',
-      summary: 'Format Best Time Tidak sesuai. Format wajib berupa xx:xx:xx',
+      summary: 'Format Best Time Tidak sesuai. Format wajib berupa xx.xx.xx',
     });
   }
 
-  if (valid) {
-    toast.add({
-      severity: 'success',
-      summary: 'Form berhasil disimpan.',
-      life: 3000,
-    });
-  }
+  console.log('initialValues.value :>> ', initialValues.value);
+
+  toast.add({
+    severity: 'success',
+    summary: 'Form berhasil disimpan.',
+    life: 3000,
+  });
 };
 
 function selectRegistrationType(value: EnumRegistrationType) {
@@ -235,12 +241,19 @@ function onInputChange(e: Event) {
   (<HTMLInputElement>e.target).value = '';
   uploadFiles(files.value);
 }
+
+// Function to submit the form programmatically
+const submitForm = () => {
+  if (formRef.value) {
+    formRef.value.click();
+  }
+};
 </script>
 
 <template>
   <div class="flex flex-col gap-12">
     <h1 class="text-3xl font-bold text-gray-900">Registrasi Kejurkab</h1>
-    <div class="flex flex-col gap-4 bg-white p-8 rounded-lg">
+    <div class="flex flex-col gap-6 bg-white p-8 rounded-lg">
       <Toast />
 
       <Text
@@ -295,13 +308,13 @@ function onInputChange(e: Event) {
         :resolver
         @submit="onFormSubmit"
       >
-        <div class="grid grid-cols-2 gap-8 w-full py-10">
+        <div class="flex flex-col gap-6 w-full py-10">
           <div
             v-if="selectedCompeType === EnumCompetitionType.Individual"
             class="flex flex-col gap-1"
           >
             <FieldLayout label="Nama Peserta" required>
-              <InputText id="name" name="name" type="text" fluid />
+              <InputText v-model="initialValues.name" id="name" name="name" type="text" fluid />
             </FieldLayout>
             <Message v-if="$form?.name?.invalid" severity="error" size="small" variant="simple">{{
               $form.name.error?.message
@@ -309,7 +322,13 @@ function onInputChange(e: Event) {
           </div>
           <div class="flex flex-col gap-1">
             <FieldLayout label="Nama Klub" required>
-              <InputText id="clubName" name="clubName" type="text" fluid />
+              <InputText
+                v-model="initialValues.clubName"
+                id="clubName"
+                name="clubName"
+                type="text"
+                fluid
+              />
             </FieldLayout>
             <Message
               v-if="$form?.clubName?.invalid"
@@ -321,7 +340,14 @@ function onInputChange(e: Event) {
           </div>
           <div class="flex flex-col gap-1">
             <FieldLayout label="Tahun Lahir" required>
-              <InputText id="birthYear" name="birthYear" type="number" fluid />
+              <InputText
+                v-model="initialValues.birthYear"
+                id="birthYear"
+                name="birthYear"
+                type="number"
+                min="0"
+                fluid
+              />
             </FieldLayout>
             <Message
               v-if="$form?.birthYear?.invalid"
@@ -333,7 +359,13 @@ function onInputChange(e: Event) {
           </div>
           <div class="flex flex-col gap-1">
             <FieldLayout label="Jenis Kelamin" required>
-              <Select name="gender" :options="gender" option-label="label" option-value="value" />
+              <Select
+                v-model="initialValues.gender"
+                name="gender"
+                :options="gender"
+                option-label="label"
+                option-value="value"
+              />
             </FieldLayout>
             <Message v-if="$form?.gender?.invalid" severity="error" size="small" variant="simple">{{
               $form.gender.error?.message
@@ -362,6 +394,7 @@ function onInputChange(e: Event) {
           <div class="flex flex-col gap-1">
             <FieldLayout label="Nomor Lomba" required>
               <MultiSelect
+                v-model="initialValues.competitionCategory"
                 name="competitionCategory"
                 :options="competitionCategories"
                 option-label="label"
@@ -379,7 +412,13 @@ function onInputChange(e: Event) {
           </div>
           <div class="flex flex-col gap-1">
             <FieldLayout label="Best Time" required>
-              <InputText id="bestTime" name="bestTime" type="text" fluid />
+              <InputText
+                v-model="initialValues.bestTime"
+                id="bestTime"
+                name="bestTime"
+                type="text"
+                fluid
+              />
             </FieldLayout>
             <Message
               v-if="$form?.bestTime?.invalid"
@@ -391,7 +430,15 @@ function onInputChange(e: Event) {
           </div>
         </div>
         <div class="flex justify-end">
-          <Button type="submit" severity="info" label="Simpan" />
+          <button ref="formRef"></button>
+          <ConfirmableButton
+            main-button-text="Simpan"
+            message="Pastikan data yang di-inputkan sudah sesuai dan tidak ada kesalahan!"
+            modal-title="Perhatian!"
+            cancel-button-text="Periksa kembali"
+            submit-button-text="Simpan"
+            @confirmed="submitForm"
+          />
         </div>
       </Form>
 

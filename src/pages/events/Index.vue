@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Button } from 'primevue';
-import Table from '../components/Table.vue';
-import TextField from '../components/TextField.vue';
+import Table from '../../components/Table.vue';
+import Text from '../../components/Text.vue';
+import { useRouter } from 'vue-router';
 
 type Event = {
   id: number;
@@ -11,6 +12,8 @@ type Event = {
   city: string;
   isActive: boolean;
 };
+
+const router = useRouter();
 
 const userData = ref<Event[]>([
   { id: 1, name: 'Event Januari ', date: '01/01/2025', city: 'New York', isActive: false },
@@ -35,21 +38,39 @@ const columns = ref([
   { name: 'Active', field: 'isActive', template: 'tag' },
   { name: 'Actions', field: 'actions', template: 'actions' },
 ]);
+
+function editEvent(id: number) {
+  console.log('Edit event with ID:', id);
+}
+
+function viewEvent(id: number) {
+  console.log('Edit event with ID:', id);
+}
+
+function goToCreateEvent() {
+  router.push({ name: 'CreateEvent' });
+}
 </script>
 <template>
-  <div>
-    <TextField type="h1" class="text-2xl font-bold mb-6">Events Management</TextField>
+  <div class="flex flex-col gap-6">
+    <Text as="h1" text="Event Management" />
 
-    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
       <div class="p-4 flex items-center justify-between border-b">
         <div>
-          <TextField type="h3" class="text-lg font-semibold">All Events</TextField>
-          <p class="text-sm text-gray-500">Manage your events</p>
+          <Text as="h3" variant="subtitle1" text="Semua Event" />
         </div>
-        <Button> Add Event </Button>
+        <Button severity="info" @click="goToCreateEvent"> Tambah Event </Button>
       </div>
 
-      <Table :values="userData" :columns="columns"> </Table>
+      <Table :values="userData" :columns="columns">
+        <template #actions="{ data }">
+          <div class="flex gap-2 items-center">
+            <Button severity="info" variant="outlined" @click="viewEvent(data.id)">Lihat</Button>
+            <Button severity="contrast" variant="outlined" @click="editEvent(data.id)">Edit</Button>
+          </div>
+        </template></Table
+      >
     </div>
   </div>
 </template>

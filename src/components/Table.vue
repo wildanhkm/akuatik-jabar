@@ -3,7 +3,6 @@ import { defineProps } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Tag from 'primevue/tag';
-import { Button } from 'primevue';
 
 type TableProps = {
   values: unknown[];
@@ -15,10 +14,10 @@ type TableProps = {
 };
 
 const props = defineProps<TableProps>();
-const emit = defineEmits<{
-  (e: 'onEditAction', id: string): void;
-  (e: 'onDeleteAction', id: string): void;
-}>();
+// const emit = defineEmits<{
+//   (e: 'onEditAction', id: string): void;
+//   (e: 'onDeleteAction', id: string): void;
+// }>();
 
 // Helper function to get status severity based on boolean value
 const getSeverity = (status: boolean) => {
@@ -39,8 +38,13 @@ const getSeverity = (status: boolean) => {
       :field="col.field"
       :header="col.name"
     >
-      <!-- Custom template options based on column type -->
-      <template #body="slotProps" v-if="col.template === 'tag'">
+      <!-- Use parent slot if provided for this column -->
+      <template #body="slotProps" v-if="$slots[col.field]">
+        <slot :name="col.field" v-bind="slotProps" />
+      </template>
+
+      <!-- Default templates if no parent slot -->
+      <template #body="slotProps" v-else-if="col.template === 'tag'">
         <Tag
           :value="slotProps.data[col.field] ? 'Active' : 'Inactive'"
           :severity="getSeverity(slotProps.data[col.field])"
@@ -50,23 +54,6 @@ const getSeverity = (status: boolean) => {
       <template #body="slotProps" v-else-if="col.template === 'name'">
         <div class="flex align-items-center gap-2">
           <span class="font-bold">{{ slotProps.data[col.field] }}</span>
-        </div>
-      </template>
-
-      <template #body="slotProps" v-else-if="col.template === 'actions'">
-        <div class="flex gap-2">
-          <Button
-            severity="info"
-            variant="outlined"
-            @click="emit('onEditAction', slotProps.data['id'])"
-            >Edit</Button
-          >
-          <Button
-            severity="danger"
-            variant="outlined"
-            @click="emit('onDeleteAction', slotProps.data['id'])"
-            >Delete</Button
-          >
         </div>
       </template>
     </Column>

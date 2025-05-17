@@ -2,7 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DashboardView from '../pages/Dashboard.vue';
 import LoginView from '../pages/Login.vue';
 import UsersView from '../pages/Users.vue';
-import EventsView from '../pages/Events.vue';
+
+import EventsView from '../pages/events/Index.vue';
+import EditEventView from '../pages/events/EditEvent.vue';
+import CreateEventView from '../pages/events/CreateEvent.vue';
+
 import StartingListView from '../pages/StartingList.vue';
 import RegisterView from '../pages/Register.vue';
 import KejurkabRegister from '../pages/public/KejurkabRegister.vue';
@@ -14,10 +18,6 @@ const routes = [
     path: '/',
     name: '',
     component: AuthenticatedLayout,
-    redirect: () => {
-      const token = localStorage.getItem('token');
-      return token ? '/dashboard' : '/login';
-    },
     children: [
       {
         path: '/dashboard',
@@ -27,21 +27,33 @@ const routes = [
       },
       {
         path: '/users',
-        name: 'Users',
+        name: 'User',
+        component: UsersView,
+        meta: { requiresAuth: true, icon: 'users' },
+      },
+      {
+        path: '/users',
+        name: 'Admin',
         component: UsersView,
         meta: { requiresAuth: true, icon: 'users' },
       },
       {
         path: '/events',
-        name: 'Events',
+        name: 'Event',
         component: EventsView,
         meta: { requiresAuth: true, icon: 'calendar' },
       },
       {
-        path: '/starting-list',
-        name: 'Starting List',
-        component: StartingListView,
-        meta: { requiresAuth: true, icon: 'chart' },
+        path: '/events/edit-event/:id',
+        name: 'EditEvent',
+        component: EditEventView,
+        meta: { requiresAuth: true, showInSidebar: false },
+      },
+      {
+        path: '/events/create-event',
+        name: 'CreateEvent',
+        component: CreateEventView,
+        meta: { requiresAuth: true, showInSidebar: false },
       },
     ],
   },
@@ -56,7 +68,7 @@ const routes = [
     name: 'Register',
     component: RegisterView,
     meta: { requiresAuth: false },
-  },  
+  },
   {
     path: '/public',
     name: 'Public',
@@ -76,7 +88,7 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../pages/public/NotFound.vue'),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: false, showInSidebar: false },
   },
 ];
 
@@ -119,7 +131,6 @@ router.beforeEach((to, _, next) => {
       }
     } catch (error) {
       // If token is invalid, remove it
-      console.error('Invalid token:', error);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       if (requiresAuth) {

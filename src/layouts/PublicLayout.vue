@@ -15,12 +15,12 @@ import Logo from '/images/logo_akuatik.jpg';
         <router-link class="text-xl text-gray-900" to="/public/kejurkab/register"
           >Registrasi Kejurkab</router-link
         >
-        <router-link class="text-xl text-gray-900" to="/public/kejurkab/invoice"
+        <!-- <router-link class="text-xl text-gray-900" to="/public/kejurkab/invoice"
           >Invoice</router-link
         >
         <router-link class="text-xl text-gray-900" to="/public/kejurkab/register-confirmation"
           >Konfirmasi Pendaftaran</router-link
-        >
+        > -->
       </div>
     </header>
 

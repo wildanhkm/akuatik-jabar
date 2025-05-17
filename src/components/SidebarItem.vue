@@ -16,8 +16,8 @@ const props = defineProps<SidebarItemType>();
   <router-link
     :to="props.to"
     :class="[
-      'flex items-center py-3 px-4 transition-colors hover:bg-gray-700',
-      props.active ? 'bg-gray-700' : '',
+      'flex items-center py-3 px-4 transition-colors text-gray-900 hover:bg-blue-500 hover:text-white',
+      props.active ? 'bg-blue-500 text-white font-medium' : '',
     ]"
   >
     <div class="mr-4">
